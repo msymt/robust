@@ -3,10 +3,13 @@ import sys
 import utils
 from scu import SCU
 
+RECEIVER_ADDRESS = "127.0.0.1"
+PORT = 8888
+
 def main():
     if sys.argv[1] == "sender":
         scu = SCU(mtu=1500)
-        scu.bind_as_sender(receiver_address=("169.254.229.153", 8888))
+        scu.bind_as_sender(receiver_address=(RECEIVER_ADDRESS, PORT))
         try:
             # serial
             for id in range(0, 1000):
@@ -29,11 +32,13 @@ def main():
     elif sys.argv[1] == "receiver":
         # TODO
         scu = SCU(mtu = 1500)
-        scu.bind_as_receiver(receiver_address = ("169.254.155.219", 8888))
+        scu.bind_as_receiver(receiver_address = (RECEIVER_ADDRESS, PORT))
         for i in range(0, 1000):
             filedata = scu.recv()
-            utils.write_file(f"../data/data{i}", filedata)
+            utils.write_file(f"../dataReceive/data{i}", filedata)
             print(f"file received: {i}", end="\r")
+    else:
+        print("Usage: python3 main.py sender|receiver")
 
 if __name__ == '__main__':
     main()

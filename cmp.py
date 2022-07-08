@@ -6,8 +6,8 @@ import os
 filepath_list = []
 
 received_list = []
-for file in os.listdir("./data"):
-    filepath = os.path.join("./data", file)
+for file in os.listdir("./dataReceive"):
+    filepath = os.path.join("./dataReceive", file)
     if os.path.isfile(filepath):
         filepath_list.append(filepath)
         with open(filepath, mode='rb') as f:
