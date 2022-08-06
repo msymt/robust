@@ -61,37 +61,7 @@ int checkIfFileExists(const char* filename){
         return 0;
 }
 
-// サーバにファイルを送信する
-void send_file(char* file_path, int sockfd) {
-  // char buf[BUFSIZE];
-  FILE *fp = fopen(file_path, "rb");
-  if(fp == NULL) {
-    perror("fopen");
-    exit(1);
-  }
-  int read_size = 0;
-  int res;
-  do {
-    char buf[FILESIZE];
-    res = fread(buf, sizeof(buf), FILESIZE, fp);
-    fclose(fp);
-    int len = send(sockfd, buf, sizeof(buf), 0);
-    if(len < 0) {
-      perror("send");
-      exit(1);
-    }
-
-    read_size += len;
-    // printf("read_size: %d\n", read_size); // debug
-    bzero(buf, BUFSIZE); // clear buffer
-    if(read_size >= FILESIZE) {
-      fprintf(stderr, "read_size: %d is over\n", read_size);
-      break;
-    }
-  } while(res > 0);
-  fprintf(stderr, "file contents is over\n");
-}
-
+// 分割して送信
 ssize_t send_all(int soc, char *buf, size_t size, int flag)
 {
     ssize_t len, lest;
@@ -108,7 +78,7 @@ ssize_t send_all(int soc, char *buf, size_t size, int flag)
     return (size);
 }
 
-/* 送受信処理 */
+// ファイルを1つ送信
 void send_one(char *file_path, int soc)
 {
     ssize_t len;
