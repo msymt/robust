@@ -1,5 +1,15 @@
 # robust sample
 
+## usage
+
+```bash
+bash build.sh
+# one terminal
+./server
+# another terminal
+./client
+```
+
 
 ## references
 
