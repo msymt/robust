@@ -95,6 +95,7 @@ int recv_loop(int acc)
         fwrite(recv_buf, sizeof(char), sizeof(recv_buf), fp);
         fseek(fp, 0, SEEK_END); // seek to end of file
         total += len;
+        usleep(1000); // ファイルを受信する間隔
     } while(total < FILESIZE && total > 0);
     fprintf(stderr, "total:%d\n", (int) total);
     fclose(fp);
