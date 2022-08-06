@@ -142,7 +142,7 @@ int main(void) {
     perror("listen");
     exit(1);
   }
-  // accept_loop(sockfd);
+
   /* TCPクライアントからの接続要求を受け付ける */
   client_len = sizeof(client);
   new_sockfd = accept(sockfd, (struct sockaddr *)&client, &client_len);

@@ -29,7 +29,7 @@ char g_mode='n';
 // char* data_dir = "../sampleData/";
 char* data_dir = "../data/";
 char* file_name_prefix = "data"; // data0, data1, data2, ...
-char g_buf[FILESIZE];
+char g_buf[FILESIZE]; // ファイルの読み込みバッファ
 
 // flow: socket-connect
 
@@ -84,7 +84,6 @@ void send_file(char* file_path, int sockfd) {
     read_size += len;
     // printf("read_size: %d\n", read_size); // debug
     bzero(buf, BUFSIZE); // clear buffer
-    // free(buf);
     if(read_size >= FILESIZE) {
       fprintf(stderr, "read_size: %d is over\n", read_size);
       break;
