@@ -29,7 +29,8 @@ char g_mode='n';
 // char* data_dir = "../sampleData/";
 char* data_dir = "../data/";
 char* file_name_prefix = "data"; // data0, data1, data2, ...
-char g_buf[FILESIZE]; // ファイルの読み込みバッファ
+// char g_buf[FILESIZE]; // ファイルの読み込みバッファ
+char g_buf[BUFSIZE]; // ファイルの読み込みバッファ
 
 // flow: socket-connect
 
@@ -62,42 +63,60 @@ int checkIfFileExists(const char* filename){
 }
 
 // 分割して送信
-ssize_t send_all(int soc, char *buf, size_t size, int flag)
-{
-    ssize_t len, lest;
-    char *ptr;
-    for(ptr = buf, lest = size; lest > 0; lest -= len, ptr += len) {
-        if ((len = send(soc, ptr, lest, flag)) == -1) {
-            /* エラー:EAGAINでもリトライしない */
-            perror("send");
-            return (-1);
-        } else {
-          fprintf(stderr, "send:%d\n", (int) len);
-        }
-    }
-    return (size);
-}
+// ssize_t send_all(int soc, char *buf, size_t size, int flag)
+// {
+//     ssize_t len, lest;
+//     char *ptr;
+//     for(ptr = buf, lest = size; lest > 0; lest -= len, ptr += len) {
+//         if ((len = send(soc, ptr, lest, flag)) == -1) {
+//             /* エラー:EAGAINでもリトライしない */
+//             perror("send");
+//             return (-1);
+//         } else {
+//           fprintf(stderr, "send:%d\n", (int) len);
+//         }
+//     }
+//     return (size);
+// }
 
 // ファイルを1つ送信
-void send_one(char *file_path, int soc)
-{
-    ssize_t len;
-    memset(g_buf, 0, sizeof(g_buf)); // init
-    // read binary file to g_buf
-    FILE *fp = fopen(file_path, "rb");
-    if(fp == NULL) {
-        perror("fopen");
-        exit(1);
+void send_one(char *file_path, int soc) {
+  fpos_t ft;
+  ssize_t total = 0, len;
+  memset(g_buf, 0, sizeof(g_buf)); // init
+  // read binary file to g_buf
+  FILE *fp = fopen(file_path, "rb");
+  if(fp == NULL) {
+      perror("fopen");
+      exit(1);
+  }
+  // sizeof(g_buf)ごとに分割送信
+  while(1) {
+    len = fread(g_buf, sizeof(g_buf), 1, fp);
+    fprintf(stderr, "fread:%d\n", (int) len); // debug
+    if(len <= 0) {
+      // EOF or error
+      break;
     }
-    len = fread(g_buf, sizeof(g_buf), FILESIZE, fp);
-    fprintf(stderr, "fread:%d\n", (int) len);
-    fclose(fp);
-    /* 送信 */
-    if ((len = send_all(soc, g_buf, sizeof(g_buf), 0)) == -1) {
+    len = send(soc, g_buf, sizeof(g_buf), 0);
+    if(len == -1) {
         /* エラー:EAGAINでもリトライしない */
         perror("send");
     }
-    fprintf(stderr, "send:%d\n", (int) len);
+    total += len;
+    fseek(fp,total, SEEK_SET); // 読み書き位置を先頭からtotalバイトずらす
+
+    /// debug
+    //fgetpos(fp,&ft);
+    //printf("current fp location: %ld\n",ft);
+    ///
+
+    // free buf
+    bzero(g_buf, BUFSIZE);
+    usleep(1000);
+  }
+  fprintf(stderr, "send:%d\n", (int) len);
+  fclose(fp);
 }
 
 void read_dir_file(char *dir_name, int sockfd) {
@@ -111,7 +130,7 @@ void read_dir_file(char *dir_name, int sockfd) {
     // 該当するファイルが存在するかチェック
     if(checkIfFileExists(file_path)) {
       send_one(file_path, sockfd);
-      usleep(3 * 10000); // 3ms
+      usleep(1000); // ファイル間の送る間隔
     } else {
       // ない場合は、送り終えたとみなす
       printf("%s not found\n", file_path);
