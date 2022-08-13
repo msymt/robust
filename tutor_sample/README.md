@@ -13,7 +13,8 @@ bash build.sh
 
 ## references
 
-- Linuxネットワークプログラミングバイブル」, http://www.ncad.co.jp/~mtaneda/lnpb/#SOURCEDOWNLOAD
+- Linuxネットワークプログラミングバイブル, http://www.ncad.co.jp/~mtaneda/lnpb
+- https://stackoverflow.com/questions/10841946/c-fread-binary-from-bin-file
 - https://stackoverflow.com/questions/47185326/how-to-write-binary-data-received-with-recv-to-file
 - https://neineigh.hatenablog.com/entry/2013/09/28/185053
 - https://qiita.com/tajima_taso/items/2f0606db7764580cf295

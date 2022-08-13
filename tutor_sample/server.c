@@ -63,7 +63,7 @@ int recv_loop(int acc)
     // printf("strlen file_path: %lu\n", strlen(file_path));　// debug
     // concat ../dataReceive/ + dataXX
     snprintf(file_path, sizeof(file_path), "%s%s%d", data_dir, file_name_prefix, receive_file_count);
-    // printf("file_path: %s\n", file_path); // debug
+    printf("file_path: %s\n", file_path); // debug
 
     FILE *fp = fopen(file_path, "ab+"); // append mode
     if(fp == NULL) {
@@ -84,8 +84,7 @@ int recv_loop(int acc)
                 break;
             }
         }
-        if (len == 0) {
-            /* エンド・オブ・ファイル */
+        if (len == 0) { // EOF
             fprintf(stderr, "recv:EOF\n");
             break;
         }

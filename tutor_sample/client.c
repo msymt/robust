@@ -29,7 +29,6 @@ char g_mode='n';
 // char* data_dir = "../sampleData/";
 char* data_dir = "../data/";
 char* file_name_prefix = "data"; // data0, data1, data2, ...
-// char g_buf[FILESIZE]; // ファイルの読み込みバッファ
 char g_buf[BUFSIZE]; // ファイルの読み込みバッファ
 
 // flow: socket-connect
